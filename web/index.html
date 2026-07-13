@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!-- ===================== PRIMARY SEO META ===================== -->
+  <!-- These tags live in the static HTML shell, so they ARE read by
+       search crawlers and social unfurlers even though the rendered
+       app body draws to a <canvas> (see README "SEO reality check"). -->
+  <title>Akshay H | Flutter Developer, Backend Developer</title>
+  <meta name="title" content="Akshay H | Flutter Developer & Backend Developer">
+  <meta name="description" content="Akshay H is a Computer Science Engineering student and Flutter/Backend developer building scalable mobile apps and backend systems. Explore projects, skills and blog.">
+  <meta name="keywords" content="Akshay H, Flutter Developer, Backend Developer, Flutter Portfolio, Dart Developer, Mobile App Developer, Machine Learning, Riverpod, GoRouter, St Joseph Engineering College">
+  <meta name="author" content="Akshay H">
+  <meta name="robots" content="index, follow">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+
+  <!-- Canonical URL: update to your final deployed domain -->
+  <link rel="canonical" href="https://akshayh.dev/">
+
+  <!-- ===================== OPEN GRAPH ===================== -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://akshayh.dev/">
+  <meta property="og:title" content="Akshay H | Flutter Developer & Backend Developer">
+  <meta property="og:description" content="Building scalable mobile applications, backend systems, and innovative solutions through modern technologies.">
+  <meta property="og:image" content="https://akshayh.dev/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Akshay H — Portfolio">
+
+  <!-- ===================== TWITTER CARD ===================== -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://akshayh.dev/">
+  <meta name="twitter:title" content="Akshay H | Flutter Developer & Backend Developer">
+  <meta name="twitter:description" content="Building scalable mobile applications, backend systems, and innovative solutions through modern technologies.">
+  <meta name="twitter:image" content="https://akshayh.dev/og-image.png">
+
+  <!-- ===================== STRUCTURED DATA (JSON-LD) ===================== -->
+  <!-- Person schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Akshay H",
+    "url": "https://akshayh.dev",
+    "jobTitle": "Flutter App Developer | Backend Developer",
+    "description": "Computer Science Engineering student building scalable mobile applications, backend systems, and innovative software solutions.",
+    "email": "mailto:akshay.h.achar@gmail.com",
+    "sameAs": [
+      "https://github.com/akshay-h-dev",
+      "https://linkedin.com/in/akshay-h-info"
+    ],
+    "alumniOf": {
+      "@type": "CollegeOrUniversity",
+      "name": "St Joseph Engineering College"
+    },
+    "knowsAbout": ["Flutter", "Dart", "Backend Development", "Machine Learning", "Node.js", "Python", "FastAPI", "Firebase"]
+  }
+  </script>
+
+  <!-- Website schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Akshay H — Portfolio",
+    "url": "https://akshayh.dev",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://akshayh.dev/blog?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <!-- iOS / PWA -->
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Preconnect for faster font loading (google_fonts) -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <style>
+    html, body { background-color: #000000; height: 100%; }
+    /* Lightweight CSS loading splash so first paint isn't a blank canvas.
+       The percentage is a simulated approximation (see script below) —
+       Flutter's web bootstrap doesn't expose real byte-level download
+       progress, so this eases toward ~92% and only ever snaps to 100%
+       at the real moment `flutter-first-frame` fires, so it's never
+       inaccurate about when the app is actually ready. */
+    #app-loading {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 18px;
+      background: #000000; z-index: 9999; transition: opacity .4s ease;
+    }
+    #app-loading .spinner-wrap { position: relative; width: 64px; height: 64px; }
+    #app-loading .spinner {
+      width: 64px; height: 64px; border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.15);
+      border-top-color: #35E7E0;
+      animation: spin 0.9s linear infinite;
+    }
+    #app-loading .percentage {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 13px; color: #F5F7FA;
+    }
+    #app-loading .label {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 12px; letter-spacing: 1px; color: #6B7280;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div id="app-loading">
+    <div class="spinner-wrap">
+      <div class="spinner"></div>
+      <div class="percentage" id="app-loading-percentage">0%</div>
+    </div>
+    <div class="label">Initializing Portfolio...</div>
+  </div>
+
+  <!-- SEO fallback content: present in the static DOM for crawlers and
+       screen readers before (or if) the Flutter app takes over. -->
+  <noscript>
+    <h1>Akshay H — Flutter Developer, Backend Developer</h1>
+    <p>Building scalable mobile applications, backend systems, and innovative solutions through modern technologies. View projects, skills, and blog at akshayh.dev.</p>
+  </noscript>
+
+  <script src="flutter_bootstrap.js" async></script>
+  <script>
+    (function () {
+      var el = document.getElementById('app-loading-percentage');
+      var pct = 0;
+      var done = false;
+
+      // Eases toward ~92% and stalls there — real completion is signalled
+      // by the 'flutter-first-frame' event below, never by this timer.
+      var interval = setInterval(function () {
+        if (done) { clearInterval(interval); return; }
+        var remaining = 92 - pct;
+        pct += Math.max(remaining * 0.06, 0.15);
+        if (pct >= 92) pct = 92;
+        if (el) el.textContent = Math.floor(pct) + '%';
+      }, 120);
+
+      window.addEventListener('flutter-first-frame', function () {
+        done = true;
+        clearInterval(interval);
+        if (el) el.textContent = '100%';
+        var wrap = document.getElementById('app-loading');
+        setTimeout(function () {
+          if (wrap) {
+            wrap.style.opacity = '0';
+            setTimeout(function () { wrap.remove(); }, 400);
+          }
+        }, 150);
+      });
+    })();
+  </script>
+</body>
+</html>

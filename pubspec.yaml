@@ -1,0 +1,44 @@
+name: akshay_portfolio
+description: "Premium Flutter Web portfolio for Akshay H — Flutter, Backend."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.5.1
+
+  # UI / animation
+  flutter_animate: ^4.5.0
+  google_fonts: ^6.2.1
+  flutter_svg: ^2.0.10+1
+  responsive_framework: ^1.4.0
+  visibility_detector: ^0.4.0+2
+
+  # Utilities
+  url_launcher: ^6.3.0
+  cupertino_icons: ^1.0.8
+
+  # Web-only DOM access (title/meta/JSON-LD injection for SEO).
+  # Wasm-compatible replacement for the deprecated dart:html.
+  web: ^1.0.0
+
+  font_awesome_flutter: ^10.7.0
+  http: ^1.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/resume/
