@@ -28,7 +28,7 @@ dependencies:
   # Wasm-compatible replacement for the deprecated dart:html.
   web: ^1.0.0
 
-  font_awesome_flutter: ^10.7.0
+  font_awesome_flutter: ^11.0.0
   http: ^1.2.2
 
 dev_dependencies:
