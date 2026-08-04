@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/project_model.dart';
@@ -38,27 +39,72 @@ class PortfolioRepository {
         architecture: e['architecture'],
         githubUrl: e['githubUrl'],
         liveDemoUrl: e['liveDemoUrl'],
+        datasetUrl: e['datasetUrl'],
       );
     }).toList();
   }
 
   Future<List<SkillCategory>> getSkillCategories() async {
-    final json = await _loadData();
-
-    return (json['skillCategories'] as List).map((category) {
-      return SkillCategory(
-        title: category['title'],
-        icon: _iconForCategory(category['title']),
-        skills: (category['skills'] as List)
-            .map(
-              (skill) => Skill(
-                skill['name'],
-                proficiency: skill['proficiency'],
-              ),
-            )
-            .toList(),
-      );
-    }).toList();
+    // Skills are intentionally local so this core portfolio content remains
+    // available even when the remote data source is unavailable. The projects,
+    // education and certifications below continue to come from the JSON feed.
+    return const [
+      SkillCategory(
+        title: 'Programming Languages',
+        icon: Icons.code_rounded,
+        skills: [
+          Skill('Java', brandIcon: FontAwesomeIcons.java),
+          Skill('Dart', brandIcon: FontAwesomeIcons.dartLang),
+          Skill('Python', brandIcon: FontAwesomeIcons.python),
+          Skill('Go', brandIcon: FontAwesomeIcons.golang),
+        ],
+      ),
+      SkillCategory(
+        title: 'Frontend',
+        icon: Icons.web_rounded,
+        skills: [
+          Skill('React', brandIcon: FontAwesomeIcons.react),
+          Skill('HTML', icon: Icons.language_rounded),
+          Skill('CSS', icon: Icons.style_rounded),],
+      ),
+      SkillCategory(
+        title: 'Backend',
+        icon: Icons.dns_rounded,
+        skills: [
+          Skill('Flask', icon: Icons.dns_rounded),
+          Skill('FastAPI', icon: Icons.dns_rounded),
+          Skill('Firebase', brandIcon: FontAwesomeIcons.fire)
+        ],
+      ),
+      SkillCategory(
+        title: 'Mobile Development',
+        icon: Icons.phone_android_rounded,
+        skills: [
+          Skill('Flutter', brandIcon: FontAwesomeIcons.flutter),
+          Skill('Riverpod', icon: Icons.account_tree_rounded),
+          Skill('Firebase', brandIcon: FontAwesomeIcons.fire),
+        ],
+      ),
+      SkillCategory(
+        title: 'Databases',
+        icon: Icons.storage_rounded,
+        skills: [
+          Skill('MySQL', brandIcon: FontAwesomeIcons.database),
+          Skill('MongoDB', brandIcon: FontAwesomeIcons.database),
+          Skill('InfluxDB', brandIcon: FontAwesomeIcons.database),
+          Skill('Supabase', brandIcon: FontAwesomeIcons.database),
+        ],
+      ),
+      SkillCategory(
+        title: 'Tools',
+        icon: Icons.build_rounded,
+        skills: [
+          Skill('Git', brandIcon: FontAwesomeIcons.gitAlt),
+          Skill('Linux', brandIcon: FontAwesomeIcons.linux),
+          Skill('Docker', brandIcon: FontAwesomeIcons.docker),
+        ],
+      ),
+    ];
   }
 
   Future<List<TimelineEntry>> getEducationTimeline() async {
@@ -88,26 +134,8 @@ class PortfolioRepository {
         )
         .toList();
   }
-
-  IconData _iconForCategory(String title) {
-    switch (title) {
-      case 'Programming Languages':
-        return Icons.code_rounded;
-      case 'Technical':
-        return Icons.dns_rounded;
-      case 'Databases':
-        return Icons.storage_rounded;
-      case 'Tools':
-        return Icons.build_rounded;
-      case 'Core Concepts':
-        return Icons.memory_rounded;
-      case 'Languages':
-        return Icons.translate_rounded;
-      default:
-        return Icons.star;
-    }
-  }
 }
+
 final portfolioRepositoryProvider =
     Provider<PortfolioRepository>((ref) => const PortfolioRepository());
 

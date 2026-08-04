@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../models/skill_model.dart';
@@ -45,7 +46,7 @@ class SkillsSection extends ConsumerWidget {
                     eyebrow: 'skills',
                     heading: 'What I Work With',
                     subheading:
-                        'Languages, frameworks and tools I reach for when turning an idea into a shipped product.',
+                        'The languages, platforms and tools I use to turn ideas into shipped products.',
                   ),
                   const SizedBox(height: 40),
                   GridView.builder(
@@ -56,7 +57,7 @@ class SkillsSection extends ConsumerWidget {
                       crossAxisCount: columns,
                       crossAxisSpacing: 20,
                       mainAxisSpacing: 20,
-                      mainAxisExtent: 360,
+                      mainAxisExtent: 320,
                     ),
                     itemBuilder: (context, index) {
                       return ScrollReveal(
@@ -115,7 +116,8 @@ class _SkillCategoryCard extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: category.skills.length,
               separatorBuilder: (_, __) => const SizedBox(height: 10),
-              itemBuilder: (context, i) => _SkillBar(skill: category.skills[i]),
+              itemBuilder: (context, i) =>
+                  _SkillItem(skill: category.skills[i]),
             ),
           ),
         ],
@@ -124,41 +126,33 @@ class _SkillCategoryCard extends StatelessWidget {
   }
 }
 
-class _SkillBar extends StatelessWidget {
+class _SkillItem extends StatelessWidget {
   final Skill skill;
-  const _SkillBar({required this.skill});
+  const _SkillItem({required this.skill});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(skill.name, style: Theme.of(context).textTheme.bodyMedium),
-            Text(
-              '${skill.proficiency}%',
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: skill.proficiency / 100),
-            duration: const Duration(milliseconds: 900),
-            curve: Curves.easeOutCubic,
-            builder: (context, value, _) => LinearProgressIndicator(
-              value: value,
-              minHeight: 6,
-              backgroundColor: AppColors.outlineSubtle,
-              valueColor: AlwaysStoppedAnimation(context.accent),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        border: Border.all(color: AppColors.outlineSubtle),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          skill.brandIcon != null
+              ? FaIcon(skill.brandIcon, color: context.accent, size: 20)
+              : Icon(skill.icon, color: context.accent, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              skill.name,
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

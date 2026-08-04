@@ -59,7 +59,8 @@ class ProjectCard extends StatelessWidget {
             ],
           ),
           if ((project.githubUrl?.isNotEmpty ?? false) ||
-              (project.liveDemoUrl?.isNotEmpty ?? false)) ...[
+              (project.liveDemoUrl?.isNotEmpty ?? false) ||
+              (project.datasetUrl?.isNotEmpty ?? false)) ...[
             const SizedBox(height: 16),
             Wrap(
               spacing: 10,
@@ -76,6 +77,12 @@ class ProjectCard extends StatelessWidget {
                     icon: const Icon(Icons.open_in_new_rounded),
                     label: 'Live Demo',
                     onTap: () => _open(project.liveDemoUrl!),
+                  ),
+                if (project.datasetUrl?.isNotEmpty ?? false)
+                  _LinkButton(
+                    icon: const Icon(Icons.dataset_outlined),
+                    label: 'View Dataset',
+                    onTap: () => _open(project.datasetUrl!),
                   ),
               ],
             ),

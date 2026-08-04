@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Skill {
   final String name;
-  final int proficiency; // 0-100, drives the animated progress indicator
+  final IconData? icon;
+  final FaIconData? brandIcon;
 
-  const Skill(this.name, {this.proficiency = 80});
+  const Skill(this.name, {this.icon, this.brandIcon})
+      : assert(icon != null || brandIcon != null);
 }
 
 class SkillCategory {

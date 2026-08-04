@@ -9,6 +9,7 @@ class Project {
   final String? imageAsset;
   final String? githubUrl;
   final String? liveDemoUrl;
+  final String? datasetUrl;
 
   const Project({
     required this.slug,
@@ -21,6 +22,7 @@ class Project {
     this.imageAsset,
     this.githubUrl,
     this.liveDemoUrl,
+    this.datasetUrl,
   });
 
   /// Minimal Project structured-data map (schema.org CreativeWork), injected
@@ -35,5 +37,6 @@ class Project {
         'keywords': technologies.join(', '),
         if (githubUrl != null) 'codeRepository': githubUrl,
         if (liveDemoUrl != null) 'url': liveDemoUrl,
+        if (datasetUrl != null) 'subjectOf': datasetUrl,
       };
 }

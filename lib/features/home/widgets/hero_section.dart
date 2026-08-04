@@ -35,16 +35,19 @@ class HeroSection extends StatelessWidget {
       color: AppColors.background,
       child: Center(
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: Responsive.maxContentWidth(context)),
+          constraints:
+              BoxConstraints(maxWidth: Responsive.maxContentWidth(context)),
           child: isDesktop
               ? Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(flex: 6, child: _HeroText(
-                      onViewProjects: onViewProjects,
-                      onDownloadResume: onDownloadResume,
-                      onContactMe: onContactMe,
-                    )),
+                    Expanded(
+                        flex: 6,
+                        child: _HeroText(
+                          onViewProjects: onViewProjects,
+                          onDownloadResume: onDownloadResume,
+                          onContactMe: onContactMe,
+                        )),
                     const SizedBox(width: 48),
                     const Expanded(flex: 5, child: _HeroVisual()),
                   ],
@@ -58,7 +61,9 @@ class HeroSection extends StatelessWidget {
                       onContactMe: onContactMe,
                     ),
                     const SizedBox(height: 48),
-                    const SizedBox(height: 280, child: _HeroVisual()),
+                    // Leave enough vertical room for the availability label
+                    // above the avatar on narrow screens.
+                    const SizedBox(height: 320, child: _HeroVisual()),
                   ],
                 ),
         ),
@@ -96,7 +101,10 @@ class _HeroText extends StatelessWidget {
                   ? Theme.of(context).textTheme.displayMedium
                   : Theme.of(context).textTheme.displayLarge)
               ?.copyWith(color: context.accent),
-        ).animate().fadeIn(duration: 500.ms, delay: 100.ms).slideY(begin: 0.15, end: 0),
+        )
+            .animate()
+            .fadeIn(duration: 500.ms, delay: 100.ms)
+            .slideY(begin: 0.15, end: 0),
         const SizedBox(height: 16),
         TypingText(
           words: AppConstants.rolesForTyping,
@@ -158,48 +166,84 @@ class _HeroText extends StatelessWidget {
     );
   }
 }
+
 class _HeroVisual extends StatelessWidget {
   const _HeroVisual();
 
   @override
   Widget build(BuildContext context) {
     final accent = context.accent;
+    final isMobile = Responsive.isMobile(context);
+    final avatarSize = isMobile ? 220.0 : 260.0;
 
     return SizedBox(
-      height: 380,
-      child: Center(
-        child: Container(
-          width: 260,
-          height: 260,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.background,
-            border: Border.all(color: accent, width: 3),
-            boxShadow: [
-              BoxShadow(
-                color: accent.withValues(alpha: 0.35),
-                blurRadius: 80,
-                spreadRadius: 10,
-              ),
-            ],
+      height: isMobile ? 320 : 380,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Align(
+            // Anchor the mobile avatar to the bottom. This reserves a
+            // dedicated row for the status label instead of letting it share
+            // the avatar's space.
+            alignment: isMobile ? Alignment.bottomCenter : Alignment.center,
+            child: Padding(
+                padding: EdgeInsets.only(bottom: isMobile ? 16 : 0),
+                child: Container(
+                  width: avatarSize,
+                  height: avatarSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.background,
+                    border: Border.all(color: accent, width: 3),
+                    boxShadow: [
+                      BoxShadow(
+                        color: accent.withValues(alpha: 0.35),
+                        blurRadius: 80,
+                        spreadRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/profile.jpg',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                )
+                // .animate(
+                //     onPlay: (controller) => controller.repeat(reverse: true))
+                // .scale(
+                //   begin: const Offset(1, 1),
+                //   end: const Offset(1.05, 1.05),
+                //   duration: 2600.ms,
+                //   curve: Curves.easeInOut,
+                // ),
+                ),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(6),
-            child: ClipOval(
-              child: Image.asset(
-                'assets/images/profile.jpg',
-                fit: BoxFit.cover,
+          Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: EdgeInsets.only(top: isMobile ? 8 : 15),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.circle, color: accent, size: 8),
+                  const SizedBox(width: 8),
+                  Text(
+                    'OPEN TO WORK',
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                          letterSpacing: 1.4,
+                        ),
+                  ),
+                ],
               ),
             ),
           ),
-        )
-            .animate(onPlay: (controller) => controller.repeat(reverse: true))
-            .scale(
-              begin: const Offset(1, 1),
-              end: const Offset(1.05, 1.05),
-              duration: 2600.ms,
-              curve: Curves.easeInOut,
-            ),
+        ],
       ),
     );
   }
