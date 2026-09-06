@@ -24,6 +24,9 @@ class ProjectCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (project.imageAsset?.isNotEmpty ?? false) ...[
+            _ProjectImage(url: project.imageAsset!, title: project.title),
+          ],
           const SizedBox(height: 18),
           Text(
             project.title,
@@ -88,6 +91,42 @@ class ProjectCard extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+class _ProjectImage extends StatelessWidget {
+  final String url;
+  final String title;
+
+  const _ProjectImage({required this.url, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          width: double.infinity,
+          color: AppColors.backgroundSecondary,
+          child: Image.network(
+            url,
+            width: double.infinity,
+            fit: BoxFit.contain,
+            semanticLabel: '$title project image',
+            loadingBuilder: (context, child, progress) {
+              if (progress == null) return child;
+              return const Center(child: CircularProgressIndicator());
+            },
+            errorBuilder: (context, error, stackTrace) {
+              return const Center(
+                child: Icon(Icons.image_not_supported_outlined),
+              );
+            },
+          ),
+        ),
       ),
     );
   }

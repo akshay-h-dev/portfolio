@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 
+import '../config/google_sheets_config.dart';
 import '../models/project_model.dart';
 import '../models/skill_model.dart';
 import '../models/certification_model.dart';
@@ -12,34 +13,63 @@ import '../models/certification_model.dart';
 class PortfolioRepository {
   const PortfolioRepository();
 
-  static const String _url =
-      'https://raw.githubusercontent.com/akshay-h-dev/portfolio-data/refs/heads/main/portfolio.json';
-
-  Future<Map<String, dynamic>> _loadData() async {
-    final response = await http.get(Uri.parse(_url));
+  Future<List<Map<String, String>>> _loadRows(String sheetName) async {
+    final response = await http.get(GoogleSheetsConfig.endpoint(sheetName));
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to load portfolio data');
+      throw Exception(
+        'Unable to load portfolio data from Google Sheets '
+        '(HTTP ${response.statusCode}).',
+      );
     }
 
-    return jsonDecode(response.body);
+    final body = response.body;
+    final jsonStart = body.indexOf('{');
+    final jsonEnd = body.lastIndexOf('}');
+    if (jsonStart == -1 || jsonEnd <= jsonStart) {
+      throw const FormatException(
+          'Google Sheets returned an invalid response.');
+    }
+
+    final payload = jsonDecode(body.substring(jsonStart, jsonEnd + 1));
+    final table = payload['table'];
+    if (table is! Map<String, dynamic> || table['cols'] is! List) {
+      throw const FormatException('Google Sheets response has no table data.');
+    }
+
+    final headers = (table['cols'] as List)
+        .map((column) => _normalise(column['label']?.toString() ?? ''))
+        .toList();
+    final rows = table['rows'];
+    if (rows is! List) return const [];
+
+    return rows.map((row) {
+      final cells = row['c'] as List? ?? const [];
+      return <String, String>{
+        for (var index = 0; index < headers.length; index++)
+          if (headers[index].isNotEmpty)
+            headers[index]: _cellValue(cells, index),
+      };
+    }).toList();
   }
 
   Future<List<Project>> getProjects() async {
-    final json = await _loadData();
+    final rows = await _loadRows(GoogleSheetsConfig.projectsSheet);
 
-    return (json['projects'] as List).map((e) {
+    return rows.map((row) {
       return Project(
-        slug: e['slug'],
-        title: e['title'],
-        description: e['description'],
-        contribution: e['contribution'],
-        features: List<String>.from(e['features']),
-        technologies: List<String>.from(e['technologies']),
-        architecture: e['architecture'],
-        githubUrl: e['githubUrl'],
-        liveDemoUrl: e['liveDemoUrl'],
-        datasetUrl: e['datasetUrl'],
+        slug: _required(row, 'slug'),
+        title: _required(row, 'title'),
+        description: _required(row, 'description'),
+        contribution: _required(row, 'contribution'),
+        features: _list(row['features']),
+        technologies: _list(row['technologies']),
+        architecture: _required(row, 'architecture'),
+        imageAsset: _optional(row, 'imageAsset') ?? _optional(row, 'imageUrl'),
+        githubUrl: _optional(row, 'githubUrl'),
+        liveDemoUrl:
+            _optional(row, 'liveDemoUrl') ?? _optional(row, 'videoUrl'),
+        datasetUrl: _optional(row, 'datasetUrl'),
       );
     }).toList();
   }
@@ -65,7 +95,8 @@ class PortfolioRepository {
         skills: [
           Skill('React', brandIcon: FontAwesomeIcons.react),
           Skill('HTML', icon: Icons.language_rounded),
-          Skill('CSS', icon: Icons.style_rounded),],
+          Skill('CSS', icon: Icons.style_rounded),
+        ],
       ),
       SkillCategory(
         title: 'Backend',
@@ -108,30 +139,71 @@ class PortfolioRepository {
   }
 
   Future<List<TimelineEntry>> getEducationTimeline() async {
-    final json = await _loadData();
+    final rows = await _loadRows(GoogleSheetsConfig.educationSheet);
 
-    return (json['education'] as List)
+    return rows
         .map(
-          (e) => TimelineEntry(
-            period: e['period'],
-            title: e['title'],
-            subtitle: e['subtitle'],
+          (row) => TimelineEntry(
+            period: _required(row, 'period'),
+            title: _required(row, 'title'),
+            subtitle: _optional(row, 'subtitle'),
           ),
         )
         .toList();
   }
 
   Future<List<Certification>> getCertifications() async {
-    final json = await _loadData();
+    final rows = await _loadRows(GoogleSheetsConfig.certificationsSheet);
 
-    return (json['certifications'] as List)
+    return rows
         .map(
-          (e) => Certification(
-            title: e['title'],
-            provider: e['provider'],
-            verifyUrl: e['verifyUrl'],
+          (row) => Certification(
+            title: _required(row, 'title'),
+            provider: _required(row, 'provider'),
+            verifyUrl: _optional(row, 'verifyUrl'),
           ),
         )
+        .toList();
+  }
+
+  static String _normalise(String value) =>
+      value.trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '');
+
+  static String _cellValue(List<dynamic> cells, int index) {
+    if (index >= cells.length || cells[index] == null) return '';
+    final value = cells[index]['v'];
+    return value?.toString().trim() ?? '';
+  }
+
+  static String _required(Map<String, String> row, String field) {
+    final value = _optional(row, field);
+    if (value == null) {
+      throw FormatException('Google Sheets row is missing "$field".');
+    }
+    return value;
+  }
+
+  static String? _optional(Map<String, String> row, String field) {
+    final value = row[_normalise(field)]?.trim();
+    return value == null || value.isEmpty ? null : value;
+  }
+
+  static List<String> _list(String? value) {
+    if (value == null || value.trim().isEmpty) return const [];
+    final trimmed = value.trim();
+    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+      final decoded = jsonDecode(trimmed);
+      if (decoded is List) {
+        return decoded
+            .map((item) => item.toString().trim())
+            .where((item) => item.isNotEmpty)
+            .toList();
+      }
+    }
+    return trimmed
+        .split(RegExp(r'\s*[|\n]\s*|\s*,\s*'))
+        .map((item) => item.trim())
+        .where((item) => item.isNotEmpty)
         .toList();
   }
 }
